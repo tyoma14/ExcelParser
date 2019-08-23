@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Excel Parser</title>
+</head>
+<body>
+    <form id="mainForm">
+        <input id="fileInput" type="file">
+    </form>
+    <button id="sendFileButton" onclick="getParsedExcel()">Распарсить</button>
+    <table border="1">
+        <tr>
+            <td>fdas</td> <td>dadasd</td> <td>dasdas</td>
+        </tr>
+
+        <tr>
+            <td>dsada</td> <td>dasda</td> <td>dasda</td>
+        </tr>
+
+        <tr>
+            <td>saddad</td> <td>dsadsa</td> <td>dsada</td>
+        </tr>
+    </table>
+    <script>
+        function sendExcel(){
+            return new Promise(function(resolve, reject){
+                let request = new XMLHttpRequest();
+                let url = "/parseExcel";
+                request.open("POST", url);
+                //request.setRequestHeader("Content-Type", "multipart/form-data; charset=utf-8");
+                let body = new FormData();
+                let fileInput = document.getElementById("fileInput");
+                let file = fileInput.files[0];
+                body.append("file", file);
+                body.append("fileName", file.name)
+                request.send(body);
+                let response = request.response;
+                //
+                //
+                //слушаем ответ от сервера
+                request.onload = () => resolve(response);
+                request.onerror = () => reject(new Error(`Ошибка соединения`));
+            });
+        }
+
+        function getParsedExcel(){
+            let promise = sendExcel();
+            promise.then(
+                response => alert(`Ответ сервера: ${response}`),
+                error => alert(`Ошибка: ${error.message}`)
+            );
+        }
+
+    </script>
+</body>
+</html>
