@@ -1,11 +1,13 @@
 package com.example.excelparser;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
 
@@ -15,17 +17,16 @@ public class Application {
 
     @PostMapping("/parseExcel")
     ResponseEntity<String> parseExcel(@RequestPart(name = "fileName") String fileName,
-                    @RequestPart(name = "file") byte[] byteArr) {
-        if(!(fileName.endsWith("xls") || fileName.endsWith("xlsx"))) {/*TODO послать ответ клиенту: формат файла недопустим*/}
-        File excelFile = new File("src\\main\\resources\\temp\\" + fileName);
-        try (FileOutputStream fos = new FileOutputStream(excelFile)){
-            if(!excelFile.exists()) excelFile.createNewFile();
-            fos.write(byteArr);
+                                      @RequestPart(name = "file") byte[] byteArr) {
+        try (ByteArrayInputStream in = new ByteArrayInputStream(byteArr)){
+            if(!(fileName.endsWith(".xlsx") || fileName.endsWith(".xls"))) throw new InvalidFormatException("");
+            ExcelParser parser = new ExcelParser(fileName, in);
+            return new ResponseEntity<>(parser.getParsedSheet(), HttpStatus.OK);
         } catch (IOException e){
-            //TODO послать ответ клиенту: ошибка чтения/записи файла
-            e.printStackTrace();
+            return new ResponseEntity<>("Ошибка чтения файла на сервере. Попробуйте ещё раз.", HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (InvalidFormatException e){
+            return new ResponseEntity<>("Формат файла недопустим.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        return new ResponseEntity<>("TestResponse", HttpStatus.OK);
     }
 
     public static void main(String[] args) {

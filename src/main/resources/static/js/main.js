@@ -12,7 +12,7 @@ function sendExcel(){
         //
         //
         //слушаем ответ от сервера
-        request.onloadend = () => resolve(request.response);
+        request.onloadend = () => resolve(request);
         request.onerror = () => reject(new Error(`Ошибка соединения`));
     });
 }
@@ -20,7 +20,17 @@ function sendExcel(){
 function getParsedExcel(){
     let promise = sendExcel();
     promise.then(
-        response => alert(`Ответ сервера: ${response}`),
+        processResponse,
         error => alert(`Ошибка: ${error.message}`)
     );
+}
+
+function processResponse(request) {
+    if(request.status == 200){
+        let div = document.getElementById("contentDiv");
+        div.innerHTML = "<pre>" + request.response + "</pre>";
+    }
+    else {
+        alert(request.response);
+    }
 }
