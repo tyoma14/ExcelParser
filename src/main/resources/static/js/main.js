@@ -13,7 +13,7 @@ function sendExcel(){
         //
         //слушаем ответ от сервера
         request.onloadend = () => resolve(request);
-        request.onerror = () => reject(new Error(`Ошибка соединения`));
+        request.onerror = () => reject(new Error("Ошибка соединения"));
     });
 }
 

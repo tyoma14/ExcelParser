@@ -26,6 +26,9 @@ public class ExcelParser {
     }
 
     public String getParsedSheet() {
-        return extractor.getText();
+        String text = extractor.getText();
+        text = text.replaceAll("<","&lt;")
+                   .replaceAll(">", "&gt;");
+        return text;
     }
 }
