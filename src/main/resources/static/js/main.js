@@ -13,8 +13,6 @@ function sendExcel(){
         }
         body.append("file", file);
         request.send(body);
-        //
-        //
         //слушаем ответ от сервера
         request.onloadend = () => resolve(request);
         request.onerror = () => reject(new Error("Потеря соединения с сервером"));
