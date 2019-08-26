@@ -1,19 +1,23 @@
 function sendExcel(){
     return new Promise(function(resolve, reject){
         let request = new XMLHttpRequest();
-        let url = "/parseExcel";
-        request.open("POST", url);
         let body = new FormData();
         let fileInput = document.getElementById("fileInput");
         let file = fileInput.files[0];
+        let url = "/parseExcel?fileName=" + file.name;
+        request.open("POST", url);
+        let maxSize = 10485760;
+        if(file.size > maxSize){
+            reject(new Error("Файл весит слишком много"));
+            return;
+        }
         body.append("file", file);
-        body.append("fileName", file.name);
         request.send(body);
         //
         //
         //слушаем ответ от сервера
         request.onloadend = () => resolve(request);
-        request.onerror = () => reject(new Error("Ошибка соединения"));
+        request.onerror = () => reject(new Error("Потеря соединения с сервером"));
     });
 }
 

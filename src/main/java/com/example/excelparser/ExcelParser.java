@@ -14,19 +14,19 @@ public class ExcelParser {
     private ExcelExtractor extractor;
 
     public ExcelParser(String fileName, ByteArrayInputStream in) throws IOException{
-        Workbook workbook;
         if(fileName.endsWith(".xlsx")) {
-            workbook = new XSSFWorkbook(in);
-            extractor = new XSSFExcelExtractor((XSSFWorkbook) workbook);
+            XSSFWorkbook workbook = new XSSFWorkbook(in);
+            extractor = new XSSFExcelExtractor(workbook);
         }
         else if(fileName.endsWith(".xls")) {
-            workbook = new HSSFWorkbook(in, false);
-            extractor = new org.apache.poi.hssf.extractor.ExcelExtractor((HSSFWorkbook) workbook);
+            HSSFWorkbook workbook = new HSSFWorkbook(in, false);
+            extractor = new org.apache.poi.hssf.extractor.ExcelExtractor(workbook);
         }
     }
 
-    public String getParsedSheet() {
+    public String getParsedBook() {
         String text = extractor.getText();
+        //для браузера заменяем знаки "<" и ">" на спецсимволы
         text = text.replaceAll("<","&lt;")
                    .replaceAll(">", "&gt;");
         return text;
